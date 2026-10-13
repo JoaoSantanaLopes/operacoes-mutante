@@ -74,3 +74,110 @@ describe('Suíte de Testes Fraca para 50 Operações Aritméticas', () => {
   test('49. deve calcular o triplo de um número', () => { expect(triplo(10)).toBe(30); });
   test('50. deve calcular a metade de um número', () => { expect(metade(20)).toBe(10); });
 });
+
+describe('Testes para matar mutantes sobreviventes', () => {
+  // Mutante 1: a > b virou a >= b
+  test('51. isMaiorQue deve retornar false para números iguais', () => {
+    expect(isMaiorQue(5, 5)).toBe(false);
+  });
+
+  // Mutante 2: celsius * 9/5 virou celsius * 9 * 5
+  test('52. deve converter 100 °C para 212 °F', () => {
+    expect(celsiusParaFahrenheit(100)).toBe(212);
+  });
+
+  // Mutante 3: o .sort() foi removido
+  test('53. deve calcular a mediana de um array desordenado', () => {
+    expect(medianaArray([5, 1, 3])).toBe(3);
+  });
+
+  // Casos "false" que nunca eram testados
+  test('54. isMenorQue deve retornar false para iguais e para maior', () => {
+    expect(isMenorQue(5, 5)).toBe(false);
+    expect(isMenorQue(10, 5)).toBe(false);
+  });
+  test('55. isMaiorQue deve retornar false quando a é menor', () => {
+    expect(isMaiorQue(5, 10)).toBe(false);
+  });
+  test('56. isEqual deve retornar false para números diferentes', () => {
+    expect(isEqual(7, 8)).toBe(false);
+  });
+  test('57. isPar deve retornar false para ímpar', () => {
+    expect(isPar(7)).toBe(false);
+  });
+  test('58. isImpar deve retornar false para par', () => {
+    expect(isImpar(4)).toBe(false);
+  });
+  test('59. isDivisivel deve retornar false quando há resto', () => {
+    expect(isDivisivel(10, 3)).toBe(false);
+  });
+
+  // Conversão de temperatura com valores que não zeram a fórmula
+  test('60. deve converter -40 °C para -40 °F', () => {
+    expect(celsiusParaFahrenheit(-40)).toBe(-40);
+  });
+  test('61. deve converter 212 °F para 100 °C', () => {
+    expect(fahrenheitParaCelsius(212)).toBe(100);
+  });
+
+  // Mediana com array de tamanho par (linha 112 nunca era executada)
+  test('62. deve calcular a mediana de um array par', () => {
+    expect(medianaArray([1, 2, 3, 4])).toBe(2.5);
+    expect(medianaArray([8, 2, 6, 4])).toBe(5);
+  });
+
+  // isPrimo: bordas e números compostos
+  test('63. 0 e 1 não são primos', () => {
+    expect(isPrimo(0)).toBe(false);
+    expect(isPrimo(1)).toBe(false);
+  });
+  test('64. 2 é primo e 4 e 9 não são', () => {
+    expect(isPrimo(2)).toBe(true);
+    expect(isPrimo(4)).toBe(false);
+    expect(isPrimo(9)).toBe(false);
+  });
+
+  // clamp: valores fora do intervalo
+  test('65. clamp deve retornar o mínimo e o máximo quando o valor sai do intervalo', () => {
+    expect(clamp(-5, 0, 10)).toBe(0);
+    expect(clamp(15, 0, 10)).toBe(10);
+  });
+  test('66. clamp com valor exatamente na borda retorna o próprio valor', () => {
+    // toBe usa Object.is, que diferencia 0 de -0
+    expect(clamp(-0, 0, 10)).toBe(-0);
+    expect(clamp(0, -10, -0)).toBe(0);
+  });
+
+  // Mensagens de erro e casos de entrada inválida
+  test('67. divisao deve lançar erro com a mensagem correta', () => {
+    expect(() => divisao(5, 0)).toThrow('Divisão por zero não é permitida.');
+  });
+  test('68. raizQuadrada deve lançar erro para negativo e aceitar zero', () => {
+    expect(() => raizQuadrada(-1)).toThrow('Não é possível calcular a raiz quadrada de um número negativo.');
+    expect(raizQuadrada(0)).toBe(0);
+  });
+  test('69. fatorial deve lançar erro para negativo e retornar 1 para 0 e 1', () => {
+    expect(() => fatorial(-1)).toThrow('Fatorial não é definido para números negativos.');
+    expect(fatorial(0)).toBe(1);
+    expect(fatorial(1)).toBe(1);
+  });
+  test('70. mediaArray de array vazio deve retornar 0', () => {
+    expect(mediaArray([])).toBe(0);
+  });
+  test('71. maximoArray e minimoArray devem lançar erro para array vazio', () => {
+    expect(() => maximoArray([])).toThrow('Array vazio не possui valor máximo.');
+    expect(() => minimoArray([])).toThrow('Array vazio не possui valor mínimo.');
+  });
+  test('72. inverso deve lançar erro para zero', () => {
+    expect(() => inverso(0)).toThrow('Não é possível inverter o número zero.');
+  });
+  test('73. medianaArray deve lançar erro para array vazio', () => {
+    expect(() => medianaArray([])).toThrow('Array vazio не possui mediana.');
+  });
+  test('74. produtoArray de array vazio retorna 1 sem chamar reduce', () => {
+    const vazio = [];
+    vazio.reduce = jest.fn();
+    expect(produtoArray(vazio)).toBe(1);
+    expect(vazio.reduce).not.toHaveBeenCalled();
+  });
+});
